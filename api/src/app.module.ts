@@ -13,11 +13,11 @@ import { CmsModule } from './cms/cms.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
-        type: 'postgres',
+        type: 'mysql',
         host: config.get<string>('DB_HOST', 'localhost'),
-        port: config.get<number>('DB_PORT', 5432),
-        username: config.get<string>('DB_USER', 'postgres'),
-        password: config.get<string>('DB_PASS', 'postgres'),
+        port: config.get<number>('DB_PORT', 3306),
+        username: config.get<string>('DB_USER', 'admin'),
+        password: config.get<string>('DB_PASS', ''),
         database: config.get<string>('DB_NAME', 'eventmanager'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,

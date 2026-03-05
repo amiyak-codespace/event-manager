@@ -24,7 +24,7 @@ export class Event {
   @Column({ type: 'text', nullable: true })
   description: string | null;
 
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'datetime' })
   date: Date;
 
   @Column({ length: 300 })
