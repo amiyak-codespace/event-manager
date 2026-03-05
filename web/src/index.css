@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,6 +7,10 @@
 @layer base {
   body {
     @apply bg-slate-50 text-slate-900 font-sans antialiased;
+  }
+
+  * {
+    @apply scroll-smooth;
   }
 }
 
@@ -15,5 +21,41 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .glass-dark {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .gradient-mesh {
+    background-color: #6366f1;
+    background-image:
+      radial-gradient(at 40% 20%, hsla(228, 95%, 55%, 0.5) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, hsla(263, 85%, 60%, 0.4) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, hsla(355, 75%, 55%, 0.2) 0px, transparent 50%),
+      radial-gradient(at 80% 50%, hsla(198, 85%, 50%, 0.3) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(269, 80%, 55%, 0.3) 0px, transparent 50%);
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600;
+  }
+}
+
+@layer components {
+  .btn-primary-gradient {
+    @apply bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200;
   }
 }
