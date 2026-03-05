@@ -1,0 +1,49 @@
+services:
+  event-manager-postgres:
+    image: postgres:16-alpine
+    container_name: event-manager-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: eventmanager
+    volumes:
+      - event-manager-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  event-manager-api:
+    build:
+      context: ./api
+    container_name: event-manager-api
+    restart: unless-stopped
+    environment:
+      PORT: "5000"
+      NODE_ENV: production
+      DB_HOST: event-manager-postgres
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: eventmanager
+      JWT_SECRET: "em-super-secret-jwt-key-2026"
+    ports:
+      - "5001:5000"
+    depends_on:
+      event-manager-postgres:
+        condition: service_healthy
+
+  event-manager-web:
+    build:
+      context: ./web
+    container_name: event-manager-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - event-manager-api
+
+volumes:
+  event-manager-pgdata:
