@@ -76,4 +76,24 @@ export class AuthService {
     if (!user) throw new UnauthorizedException('User not found');
     return { id: user.id, name: user.name, email: user.email, role: user.role };
   }
+
+  /**
+   * Issue a fresh token for the already-authenticated user.
+   *
+   * Args:
+   *   userId (string): Authenticated user's ID from the current JWT.
+   *
+   * Returns:
+   *   Promise<{ token: string }>: Fresh JWT.
+   */
+  async refresh(userId: string) {
+    const user = await this.usersService.findById(userId);
+    if (!user) throw new UnauthorizedException('User not found');
+    const token = this.jwtService.sign({
+      sub:   user.id,
+      email: user.email,
+      role:  user.role,
+    });
+    return { token };
+  }
 }
