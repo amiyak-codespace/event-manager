@@ -5,6 +5,7 @@ import {
   Users,
   Pencil,
   Trash2,
+  Clock,
 } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -28,6 +29,20 @@ const STATUS_VARIANTS: Record<
   [EventStatus.CANCELLED]: 'cancelled',
 };
 
+const STATUS_GRADIENT: Record<EventStatus, string> = {
+  [EventStatus.UPCOMING]: 'from-blue-500 to-cyan-500',
+  [EventStatus.ONGOING]: 'from-emerald-500 to-teal-500',
+  [EventStatus.COMPLETED]: 'from-slate-400 to-slate-500',
+  [EventStatus.CANCELLED]: 'from-red-400 to-rose-500',
+};
+
+const STATUS_BG: Record<EventStatus, string> = {
+  [EventStatus.UPCOMING]: 'bg-blue-50',
+  [EventStatus.ONGOING]: 'bg-emerald-50',
+  [EventStatus.COMPLETED]: 'bg-slate-50',
+  [EventStatus.CANCELLED]: 'bg-red-50',
+};
+
 interface EventCardProps {
   event: Event;
   onEdit: (event: Event) => void;
@@ -40,41 +55,38 @@ export function EventCard({ event, onEdit, onDelete }: EventCardProps) {
       ? Math.round((event.attendees / event.capacity) * 100)
       : 0;
 
-  return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col">
-      {/* Status bar */}
-      <div
-        className={`h-1 w-full ${
-          event.status === EventStatus.UPCOMING
-            ? 'bg-blue-400'
-            : event.status === EventStatus.ONGOING
-              ? 'bg-emerald-400'
-              : event.status === EventStatus.COMPLETED
-                ? 'bg-slate-300'
-                : 'bg-red-400'
-        }`}
-      />
+  const isFull = occupancy >= 100;
+  const isAlmostFull = occupancy >= 75 && !isFull;
 
-      <div className="p-5 flex flex-col gap-3 flex-1">
+  return (
+    <div className="group bg-white rounded-2xl border border-slate-100 shadow-sm card-hover overflow-hidden flex flex-col">
+      {/* Gradient header strip */}
+      <div className={`h-1.5 w-full bg-gradient-to-r ${STATUS_GRADIENT[event.status]}`} />
+
+      <div className="p-5 flex flex-col gap-3.5 flex-1">
+        {/* Title + badge */}
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold text-slate-900 text-base leading-snug line-clamp-2 flex-1">
             {event.title}
           </h3>
-          <Badge variant={STATUS_VARIANTS[event.status]}>
+          <Badge variant={STATUS_VARIANTS[event.status]} className="shrink-0">
             {STATUS_LABELS[event.status]}
           </Badge>
         </div>
 
         {event.description && (
-          <p className="text-sm text-slate-500 line-clamp-2">
+          <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">
             {event.description}
           </p>
         )}
 
-        <div className="flex flex-col gap-1.5 mt-1">
+        {/* Meta info */}
+        <div className={`rounded-xl p-3 space-y-2 ${STATUS_BG[event.status]}`}>
           <div className="flex items-center gap-2 text-sm text-slate-600">
             <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-            <span>{format(new Date(event.date), 'PPP · p')}</span>
+            <span className="font-medium">{format(new Date(event.date), 'MMM d, yyyy')}</span>
+            <Clock className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-1" />
+            <span className="text-slate-500">{format(new Date(event.date), 'h:mm a')}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-slate-600">
             <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
@@ -83,26 +95,37 @@ export function EventCard({ event, onEdit, onDelete }: EventCardProps) {
           <div className="flex items-center gap-2 text-sm text-slate-600">
             <Users className="h-3.5 w-3.5 text-slate-400 shrink-0" />
             <span>
-              {event.attendees} / {event.capacity} attendees
+              <span className="font-medium">{event.attendees}</span>
+              <span className="text-slate-400"> / {event.capacity} attendees</span>
             </span>
+            {isFull && (
+              <span className="ml-auto text-xs font-semibold text-red-500 bg-red-100 px-2 py-0.5 rounded-full">
+                Full
+              </span>
+            )}
+            {isAlmostFull && (
+              <span className="ml-auto text-xs font-semibold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">
+                Almost full
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Capacity bar */}
+        {/* Capacity progress bar */}
         {event.capacity > 0 && (
-          <div className="mt-1">
-            <div className="flex justify-between text-xs text-slate-400 mb-1">
+          <div>
+            <div className="flex justify-between text-xs text-slate-400 mb-1.5">
               <span>Capacity</span>
-              <span>{occupancy}%</span>
+              <span className={isFull ? 'text-red-500 font-medium' : isAlmostFull ? 'text-amber-500 font-medium' : ''}>{occupancy}%</span>
             </div>
-            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all ${
-                  occupancy >= 100
-                    ? 'bg-red-400'
-                    : occupancy >= 75
-                      ? 'bg-amber-400'
-                      : 'bg-emerald-400'
+                className={`h-full rounded-full transition-all duration-500 bg-gradient-to-r ${
+                  isFull
+                    ? 'from-red-400 to-red-500'
+                    : isAlmostFull
+                      ? 'from-amber-400 to-orange-400'
+                      : 'from-emerald-400 to-teal-400'
                 }`}
                 style={{ width: `${Math.min(occupancy, 100)}%` }}
               />
@@ -111,23 +134,24 @@ export function EventCard({ event, onEdit, onDelete }: EventCardProps) {
         )}
       </div>
 
+      {/* Action footer */}
       <div className="px-5 pb-4 flex gap-2 justify-end border-t border-slate-100 pt-3">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => onEdit(event)}
-          className="text-slate-600"
+          className="text-slate-600 hover:text-violet-700 hover:bg-violet-50 rounded-lg gap-1.5"
         >
-          <Pencil className="h-3.5 w-3.5 mr-1" />
+          <Pencil className="h-3.5 w-3.5" />
           Edit
         </Button>
         <Button
           variant="ghost"
           size="sm"
           onClick={() => onDelete(event)}
-          className="text-red-500 hover:text-red-600 hover:bg-red-50"
+          className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg gap-1.5"
         >
-          <Trash2 className="h-3.5 w-3.5 mr-1" />
+          <Trash2 className="h-3.5 w-3.5" />
           Delete
         </Button>
       </div>

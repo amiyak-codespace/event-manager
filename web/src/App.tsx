@@ -10,8 +10,11 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="h-8 w-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+      <div className="min-h-screen gradient-mesh flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-10 w-10 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+          <p className="text-white/70 text-sm">Loading…</p>
+        </div>
       </div>
     );
   }

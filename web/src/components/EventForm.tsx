@@ -76,7 +76,8 @@ export function EventForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
+        <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
           {error}
         </div>
       )}
@@ -90,6 +91,7 @@ export function EventForm({
           onChange={(e) => setTitle(e.target.value)}
           maxLength={200}
           required
+          className="rounded-xl"
         />
       </div>
 
@@ -170,11 +172,16 @@ export function EventForm({
       </div>
 
       <div className="flex justify-end gap-2 pt-2">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="outline" onClick={onCancel} className="rounded-xl">
           Cancel
         </Button>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving…' : initialData ? 'Update Event' : 'Create Event'}
+        <Button type="submit" disabled={isLoading} className="btn-primary-gradient rounded-xl">
+          {isLoading ? (
+            <div className="flex items-center gap-2">
+              <div className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Saving…
+            </div>
+          ) : initialData ? 'Update Event' : 'Create Event'}
         </Button>
       </div>
     </form>
