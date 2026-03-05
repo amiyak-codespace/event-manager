@@ -97,6 +97,9 @@ export const authApi = {
 
   me: (): Promise<AuthUser> =>
     request<AuthUser>('/auth/me'),
+
+  refresh: (): Promise<{ token: string }> =>
+    request<{ token: string }>('/auth/refresh', { method: 'POST' }),
 };
 
 // ─── CMS ──────────────────────────────────────────────────────────────────────

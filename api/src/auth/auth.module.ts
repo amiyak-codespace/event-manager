@@ -14,8 +14,8 @@ import { UsersModule } from '../users/users.module';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET', 'changeme-secret'),
-        signOptions: { expiresIn: '7d' },
+        secret: configService.get<string>('SHARED_JWT_SECRET', 'appsmagic-shared-jwt-2026'),
+        signOptions: { expiresIn: '14d' },
       }),
       inject: [ConfigService],
     }),

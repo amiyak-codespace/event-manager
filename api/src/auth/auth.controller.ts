@@ -33,4 +33,11 @@ export class AuthController {
   me(@Request() req: { user: { id: string } }) {
     return this.authService.me(req.user.id);
   }
+
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  refresh(@Request() req: { user: { id: string } }) {
+    return this.authService.refresh(req.user.id);
+  }
 }
